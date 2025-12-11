@@ -32,9 +32,9 @@ pipeline {
         
         stage ('Build Docker Image'){
             steps{
-                
+
             sh '''
-                docker build -t my-app:$IMAGE_TAG .
+                docker build -t my-app:$IMAGE_TAG app/
                 docker tag my-app:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
             '''
             }
