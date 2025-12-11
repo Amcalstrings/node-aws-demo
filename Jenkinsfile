@@ -4,6 +4,7 @@ pipeline {
     environment {
         AWS_DEFAULT_REGION = "us-east-1"
         REPOSITORY_URI = "717279705656.dkr.ecr.us-east-1.amazonaws.com/devops-lab"
+        IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     tools {
@@ -31,9 +32,7 @@ pipeline {
         
         stage ('Build Docker Image'){
             steps{
-            script {
-                IMAGE_TAG = "${BUILD_NUMBER}"
-            }
+                
             sh '''
                 docker build -t my-app:$IMAGE_TAG .
                 docker tag my-app:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
