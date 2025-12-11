@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_DEFAULT_REGION = "us-east-1"
+        REPOSITORY_URI = "717279705656.dkr.ecr.us-east-1.amazonaws.com/devops-lab"
+    }
+
+    tools {
+        nodejs 'node18'
+        jdk 'jdk17'
+    }
+
+    stages{
+        stage ('Checkout code'){
+            steps {
+                checkout scm
+            }
+        }
+
+        stage ('Login to ECR'){
+            steps {
+                withCredentials([aws(credentialsId: 'AWS-ECR-CRED', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        aws ecr get-login-password --region $AWS_DEFAULT_REGION \
+                        | docker login --username AWS --password-stdin $REPOSITORY_URI
+                    '''
+                }
+            }
+        }
+
+        stage ('Build Docker Image'){
+            steps{
+            script {
+                IMAGE_TAG = "${BUILD_NUMBER}"
+            }
+            sh '''
+                docker build -t my-app:$IMAGE_TAG .
+                docker tag my-app:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
+            '''
+            }
+        }
+
+        stage ('Push to ECR'){
+            steps {
+                sh '''
+                    docker push $REPOSITORY_URI:$IMAGE_TAG
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build and Docker image push successful!'
+            echo 'Pushed Image: $REPOSITORY_URI:$IMAGE_TAG'
+        }
+        failure {
+            echo '❌ Build failed. Check logs above.'
+        }
+    }
+}
