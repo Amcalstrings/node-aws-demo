@@ -52,7 +52,7 @@ pipeline {
     post {
         success {
             echo '✅ Build and Docker image push successful!'
-            echo 'Pushed Image: $REPOSITORY_URI:$IMAGE_TAG'
+            echo "Pushed Image: $REPOSITORY_URI:$IMAGE_TAG"
         }
         failure {
             echo '❌ Build failed. Check logs above.'
