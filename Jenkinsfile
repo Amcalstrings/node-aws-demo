@@ -12,7 +12,7 @@ pipeline {
     }
 
     stages{
-        stage ('Checkout code'){
+        stage ('Checkout Code'){
             steps {
                 checkout scm
             }
@@ -28,7 +28,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage ('Build Docker Image'){
             steps{
             script {
