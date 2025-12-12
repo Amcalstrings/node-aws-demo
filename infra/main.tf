@@ -33,7 +33,7 @@ resource "aws_subnet" "private-subnet" {
   count = 2
   vpc_id     = aws_vpc.test-vpc.id
   cidr_block = "10.0.${count.index + 10 }.0/24"
-  availability_zone = var.availability_zones[count.index]
+  
   tags = {
     Name = "private-subnet-${count.index}"
   }
@@ -100,10 +100,6 @@ resource "aws_route_table_association" "private-rta" {
   route_table_id = aws_route_table.private-rt.id
 }
 
-#create eks
-
-
-
 # create ecr repository
 resource "aws_ecr_repository" "app" {
   name                 = "devops-lab"
@@ -111,4 +107,5 @@ resource "aws_ecr_repository" "app" {
   image_scanning_configuration {
     scan_on_push = true
   }
+  force_delete = true
 }
