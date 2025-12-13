@@ -56,7 +56,7 @@ pipeline {
                         export AWS_DEFAULT_REGION=us-east-1
 
                         echo "Updating image tag in deployment.yaml"
-                        kubectl set image deployment/node-app app=${REPOSITORY_URI}:${IMAGE_TAG}
+                        sed -i "s|ECR_URI:latest|${REPOSITORY_URI}:${IMAGE_TAG}|g" k8s/deployment.yaml
 
 
                         echo "Applying Kubernetes manifests..."
