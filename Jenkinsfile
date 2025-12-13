@@ -55,6 +55,14 @@ pipeline {
                         export KUBECONFIG=$KUBECONFIG
                         export AWS_DEFAULT_REGION=us-east-1
 
+                        echo "installing prometheus monitor..."
+                        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts || true
+
+                        helm repo update
+                        helm upgrade --install prometheus \
+                          prometheus-community/kube-prometheus-stack \
+                          --namespace monitoring --create-namespace
+
                         echo "Updating image tag in deployment.yaml"
                         sed -i "s|ECR_URI:latest|${REPOSITORY_URI}:${IMAGE_TAG}|g" K8s/deployment.yaml
 
