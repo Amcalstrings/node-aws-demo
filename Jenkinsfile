@@ -47,6 +47,25 @@ pipeline {
                 '''
             }
         }
+
+        stage ('Deploy to Kubernetes'){
+            steps {
+                withCredentials([file(credentialsId: 'KUBECONFIG_DEVOPS', variable: 'KUBECONFIG')]) {
+                    sh '''
+                        export KUBECONFIG=$KUBECONFIG
+
+                        echo "Updating image tag in deployment.yaml"
+                        sed -i "s|ECR_URI:latest|${ECR_REPO}:${BUILD_NUMBER}|g" K8s/deployment.yaml
+
+                        echo "Applying Kubernetes manifests..."
+                        kubectl apply -f K8s/
+
+                        echo "Verifying rollout..."
+                        kubectl rollout status deployment/node-app
+                    '''
+                }
+            }
+        }
     }
 
     post {
