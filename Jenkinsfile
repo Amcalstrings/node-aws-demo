@@ -55,7 +55,8 @@ pipeline {
                         export KUBECONFIG=$KUBECONFIG
 
                         echo "Updating image tag in deployment.yaml"
-                        sed -i "s|ECR_URI:latest|${ECR_REPO}:${BUILD_NUMBER}|g" K8s/deployment.yaml
+                        kubectl set image deployment/node-app app=${REPOSITORY_URI}:${IMAGE_TAG}
+
 
                         echo "Applying Kubernetes manifests..."
                         kubectl apply -f K8s/
