@@ -50,9 +50,10 @@ pipeline {
 
         stage ('Deploy to Kubernetes'){
             steps {
-                withCredentials([file(credentialsId: 'KUBECONFIG_DEVOPS', variable: 'KUBECONFIG')]) {
+                withCredentials([file(credentialsId: 'KUBECONFIG_DEVOPS', variable: 'KUBECONFIG'), aws(credentialsId: 'AWS-ECR-CRED', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                     sh '''
                         export KUBECONFIG=$KUBECONFIG
+                        export AWS_DEFAULT_REGION=us-east-1
 
                         echo "Updating image tag in deployment.yaml"
                         kubectl set image deployment/node-app app=${REPOSITORY_URI}:${IMAGE_TAG}
